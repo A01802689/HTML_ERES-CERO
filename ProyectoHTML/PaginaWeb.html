@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+     <meta charset="UTF-8"> 
+    <title>Eres Cero</title>
+
+    <!-- comentario: vh, vw hacen qeu no importe qeu tanto zoom hagan se mantendra del mismo tamaño -->
+    <style>
+         html, body {
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 55vh;
+            margin: 0;
+            font-size: 4vw; 
+          
+        }
+
+        .botonRanking {
+            display: block;
+            margin: 0 auto;  /* centra el botón */
+            margin-top: -16vh;
+            font-size: 2vw;
+            padding: 1vh 2vw;
+            border: .5vb solid black;    
+            background-color: #f1c65b; 
+
+    }
+
+       .botonDesempeño {
+            display: block;
+            margin: 0 auto; 
+            margin-top: 4vh;
+            font-size: 2vw;
+            padding: 1vh 2vw;
+            border: .5vb solid black;
+            background-color: #f1c65b;  
+
+    }
+
+
+      .botonInfoGen {
+            display: block;
+            margin: 0 auto; 
+            margin-top: 4vh;
+            font-size: 2vw;
+            padding: 1vh 2vw;
+            border: .5vb solid black;
+            background-color: #f1c65b;  
+
+    }
+
+
+
+        .imagen-esquinaSuperior {
+            position: absolute;
+            top: 0%;
+            left: 80%;
+            width: 30vw;
+            height: 25vh;
+        }
+
+        .imagen-esquinaInferior {
+            position: absolute;
+            top: 80%;
+            left: -10%;
+            width: 60vw;
+            height: 55vh;
+        }
+
+        .imagen-esquinaSuperiorIzq {
+            position: absolute;
+            top: 0%;
+            left: -10%;
+            width: 37vw;
+            height: 26vh;
+         }
+
+         .simboloSuma{
+            position: absolute;
+            top: 50%;
+            left: 10%;
+            width: 5vw;
+            height: 10vh;
+
+         }
+           .simboloResta{
+            position: absolute;
+            top: 50%;
+            left: 90%;
+            width: 5vw;
+            height: 10vh;
+
+         }
+
+           .simboloDivision{
+            position: absolute;
+            top: 25%;
+            left: 10%;
+            width: 5vw;
+            height: 10vh;
+
+         }
+
+           .simboloMulti{
+            position: absolute;
+            top: 25%;
+            left: 90%;
+            width: 5vw;
+            height: 10vh;
+
+         }
+
+            .Mascota{
+            position: absolute;
+            top: 70%;
+            left: 70%;
+            width: 30vw;
+            height: 30vh;
+
+         }
+
+         a { /* Quitar el subrayado de los botones */
+             text-decoration: none;
+        }
+
+         
+
+    
+    </style>
+</head>
+
+<body>
+    <h1>Eres Cero+!</h1>
+    <!-- a es de anchor, anclar algo pero el que viene de href -->
+    <a href="Ranking.html"><button class="botonRanking">Ranking</button></a>
+    <a href="Desempeño.html"><button class="botonDesempeño">Desempeño</button></a>
+    <a href="InfoGeneral.html"><button class="botonInfoGen">Informacion general</button></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <img class="imagen-esquinaSuperior" src="imagenes/ManchaAzul.png" alt="Fallo en cargar imagen" >
+    <img class="imagen-esquinaInferior" src="imagenes/ManchaRosa.png" alt="Fallo en cargar imagen" >
+    <img class="imagen-esquinaSuperiorIzq" src="imagenes/ManchaNaranja.jpg" alt="Fallo en cargar imagen" >
+    <img class="simboloSuma" src="imagenes/Suma.png" alt="Fallo en cargar imagen" >
+    <img class="simboloResta" src="imagenes/Resta.png" alt="Fallo en cargar imagen" >
+    <img class="simboloDivision" src="imagenes/Div.png" alt="Fallo en cargar imagen" >
+    <img class="simboloMulti" src="imagenes/Multi.png" alt="Fallo en cargar imagen" >
+    <img class="Mascota" src="imagenes/Numeros.jpg" alt="Fallo en cargar imagen" >
+</body>
+
+</html>
