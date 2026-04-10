@@ -2,9 +2,9 @@ import mysql from "mysql2/promise";
 
 async function crearConexion() {
     return await mysql.createConnection({
-        host: process.env.MYSQL_HOST,
-        user: process.env.MYSQL_USER,
-        password: process.env.MYSQL_PASSWORD,
+        host: process.env.MYSQL_HOST ?? 'localhost',
+        user: process.env.MYSQL_USER ?? 'root',
+        password: process.env.MYSQL_PASSWORD ?? '',
         database: "EresCero",
     });
 }
@@ -44,6 +44,8 @@ async function obtenerRankingSemanal(conexion) {
     const [rows] = await conexion.query(sqlSelect);
     return rows;
 }
+
+//async function 
 
 export default {
     crearConexion,
