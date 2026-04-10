@@ -6,6 +6,8 @@ const app = express();
 const port = process.env.PORT ?? 8080;
 const ipAddress = process.env.HOSTNAME ?? "localhost";
 
+app.use(cors());
+
 app.use(express.json());
 
 app.get("/datos-jugador/:idJugador", async (req, res) => {
