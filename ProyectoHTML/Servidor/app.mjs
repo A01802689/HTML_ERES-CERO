@@ -43,24 +43,6 @@ app.get("/ranking-historico", async (req, res) => {
   }
 });
 
-
-app.get("/ranking-semanal", async (req, res) => {
-  let conexion;
-
-  try {
-    conexion = await db.crearConexion();
-    const resultado = await db.obtenerRankingSemanal(conexion);
-    res.json(resultado);
-  } catch (err) {
-    const { name, message } = err;
-    res.json({ name, message });
-  } finally {
-    if (conexion) {
-      await conexion.end;
-    }
-  }
-});
-
 app.get("/ranking-semanal", async (req, res) => {
   let conexion;
 
