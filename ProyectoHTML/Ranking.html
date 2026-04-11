@@ -80,15 +80,15 @@
 
         <div class="recuadro">
             <h2>Ranking Histórico</h2>
-            <table>
-                <tr><th>Posición</th><th>Jugador</th><th>Puntaje</th></tr>
+            <table id="tabla-historico">
+                <tr><th>Posición</th><th>Jugador</th><th>Puntaje</th> <th>correo</th></tr>
             </table>
         </div>
 
         <div class="recuadro">
             <h2>Ranking Semanal</h2>
-            <table>
-                <tr><th>Posición</th><th>Jugador</th><th>Puntaje</th></tr>
+            <table id="tabla-semanal">
+                <tr><th>Posición</th><th>Jugador</th><th>Puntaje</th> <th>correo</th>   </tr>
             </table>
         </div>
 
@@ -101,12 +101,14 @@
         fetch('http://localhost:3000/ranking-historico')
             .then(res => res.json())
             .then(datos => {
-                const tabla = document.querySelectorAll('table')[0];
+                const tabla = document.getElementById('tabla-historico');
                 datos.forEach(fila => {
+                    
                     tabla.innerHTML += `<tr>
                         <td>${fila.posicion}</td>
                         <td>${fila.alias}</td>
                         <td>${fila.puntaje}</td>
+                        <td>${fila.correo}</td>
                     </tr>`;
                 });
             });
@@ -115,12 +117,13 @@
         fetch('http://localhost:3000/ranking-semanal')
             .then(res => res.json())
             .then(datos => {
-                const tabla = document.querySelectorAll('table')[1];
+                const tabla = document.getElementById('tabla-semanal');
                 datos.forEach(fila => {
                     tabla.innerHTML += `<tr>
                         <td>${fila.posicion}</td>
                         <td>${fila.alias}</td>
                         <td>${fila.puntaje}</td>
+                        <td>${fila.correo}</td>
                     </tr>`;
                 });
             });

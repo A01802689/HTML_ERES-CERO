@@ -20,23 +20,23 @@ db.connect((err) => {
     console.log('Conectado a MySQL');
 });
 
-// Ranking histórico
+
 app.get('/ranking-historico', (req, res) => {
     db.query(`
-        SELECT rh.posicion, j.alias, rh.puntaje 
+        SELECT rh.posicion, j.alias, rh.puntaje, j.correo
         FROM ranking_historico rh
         JOIN jugador j ON rh.idJugador = j.idJugador
         ORDER BY rh.posicion ASC
+
     `, (err, results) => {
         if (err) throw err;
         res.json(results);
     });
 });
 
-// Ranking semanal
 app.get('/ranking-semanal', (req, res) => {
     db.query(`
-        SELECT rs.posicion, j.alias, rs.puntaje 
+        SELECT rs.posicion, j.alias, rs.puntaje, j.correo
         FROM ranking_semanal rs
         JOIN jugador j ON rs.idJugador = j.idJugador
         ORDER BY rs.posicion ASC
