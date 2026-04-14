@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Información General</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+           .boton-volver {
+            display: block;
+            margin: 3vh auto 0 auto;
+            font-size: 1.5vw;
+            padding: 1vh 2vw;
+            background-color: #72b4f6;
+            border: 2px solid black;
+            cursor: pointer;
+        }
+
+        .btn-volver:hover {
+            background-color: #45a049;
+        }
+        .contenedor-scroll {
+            width: 80%;
+            height: 500px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            overflow-y: scroll;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+
+
+        a { 
+           text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="contenedor-scroll"></div>
+
+    <script>
+        fetch('http://localhost:3000/informacion-general')
+            .then(res => res.json())
+            .then(data => {
+                const contenedor = document.querySelector('.contenedor-scroll');
+                contenedor.innerHTML = '';
+
+                for (let idJugador in data) {
+                    const jugador = data[idJugador];
+                    contenedor.innerHTML += `
+                        <h2>${jugador.alias}</h2>
+                        <p>Correo: ${jugador.correo}</p>
+                        <p>Año de nacimiento: ${jugador.anioNacimiento}</p>
+                        <p>Nivel alcanzado: ${jugador.nivelAlcanzado}</p>
+                        <h3>Partidas</h3>
+                        <ul>
+                            ${jugador.partidas.map(p => `
+                                <li>Fecha: ${p.fechaHora} | Puntaje: ${p.puntaje} | Tiempo: ${p.tiempo}</li>
+                            `).join('')}
+                        </ul>
+                        <h3>Logros</h3>
+                        <ul>
+                            ${jugador.logros.map(l => `
+                                <li><b>${l.nombre}</b>: ${l.descripcion} (${l.fechaDesbloqueo})</li>
+                            `).join('')}
+                        </ul>
+                        <hr>
+                    `;
+                }
+            })
+            .catch(err => console.error('Error:', err));
+    </script>
+
+    <a href="PaginaWeb.html"><button class="boton-volver">Volver</button></a>
+
+</body>
+</html>
