@@ -11,64 +11,80 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/datos-jugador/:idJugador", async (req, res) => {
-  const idJugador = req.params.idJugador;
-  let conexion;
+    const idJugador = req.params.idJugador;
+    let conexion;
 
-  try {
-    conexion = await db.crearConexion();
-    const resultado = await db.obtenerDatosJugador(conexion, idJugador);
-    res.json(resultado);
-  } catch (err) {
-    const { name, message } = err;
-    res.json({ name, message });
-  } finally {
-    if (conexion) {
-      await conexion.end;
+    try {
+        conexion = await db.crearConexion();
+        const resultado = await db.obtenerDatosJugador(conexion, idJugador);
+        res.json(resultado);
+    } catch (err) {
+        const { name, message } = err;
+        res.json({ name, message });
+    } finally {
+        if (conexion) {
+            await conexion.end;
+        }
     }
-  }
 });
 
 app.get("/ranking-historico", async (req, res) => {
-  let conexion;
+    let conexion;
 
-  try {
-    conexion = await db.crearConexion();
-    const resultado = await db.obtenerRankingHistorico(conexion);
-    res.json(resultado);
-  } catch (err) {
-    const { name, message } = err;
-    res.json({ name, message });
-  } finally {
-    if (conexion) {
-      await conexion.end;
+    try {
+        conexion = await db.crearConexion();
+        const resultado = await db.obtenerRankingHistorico(conexion);
+        res.json(resultado);
+    } catch (err) {
+        const { name, message } = err;
+        res.json({ name, message });
+    } finally {
+        if (conexion) {
+            await conexion.end;
+        }
     }
-  }
 });
 
 app.get("/ranking-semanal", async (req, res) => {
-  let conexion;
+    let conexion;
 
-  try {
-    conexion = await db.crearConexion();
-    const resultado = await db.obtenerRankingSemanal(conexion);
-    res.json(resultado);
-  } catch (err) {
-    const { name, message } = err;
-    res.json({ name, message });
-  } finally {
-    if (conexion) {
-      await conexion.end;
+    try {
+        conexion = await db.crearConexion();
+        const resultado = await db.obtenerRankingSemanal(conexion);
+        res.json(resultado);
+    } catch (err) {
+        const { name, message } = err;
+        res.json({ name, message });
+    } finally {
+        if (conexion) {
+            await conexion.end;
+        }
     }
-  }
+});
+
+app.get("/informacion-general", async (req, res) => {
+    let conexion;
+
+    try {
+        conexion = await db.crearConexion();
+        const resultado = await db.obtenerInformacionGeneral(conexion);
+        res.json(resultado);
+    } catch (err) {
+        const { name, message } = err;
+        res.json({ name, message });
+    } finally {
+        if (conexion) {
+            await conexion.end;
+        }
+    }
 });
 
 app.listen(port, () => {
-  if (process.env.AWS_LAMBDA_FUNCTION_NAME === undefined) {
-    app.listen(port, () => {
-      console.log(`Server listening at http://${ipAddress}:${port}`);
-    });
-  }
+    if (process.env.AWS_LAMBDA_FUNCTION_NAME === undefined) {
+        app.listen(port, () => {
+            console.log(`Server listening at http://${ipAddress}:${port}`);
+        });
+    }
 });
 
 export default app;
-
