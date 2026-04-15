@@ -19,7 +19,7 @@ async function obtenerDatosJugador(conexion, idJugador) {
             idJugador: row.idJugador,
             alias: row.alias,
             correo: row.correo,
-            anioNacimiento: row.anioNacimiento,
+            añoNacimiento: row.anioNacimiento,
             nivelAlcanzado: row.nivelAlcanzado,
         };
     }
@@ -51,20 +51,27 @@ async function obtenerInformacionGeneral(conexion) {
         "SELECT idJugador, alias, anioNacimiento, nivelAlcanzado, correo FROM JUGADOR;";
     const [rows1] = await conexion.query(sqlSelect1);
 
+    const sqlSelect2 =
+        "SELECT idJugador, fechaHora, puntaje, tiempo FROM PARTIDA;";
+    const [rows2] = await conexion.query(sqlSelect2);
+
+    const sqlSelect3 =
+        "SELECT jl.idJugador as idJugador, jl.fechaDesbloqueo as fechaDesbloqueo, " +
+        "l.idLogro as idLogro, l.nombre as nombre, l.descripcion as descripcion " +
+        "FROM JUGADOR_LOGRO jl " +
+        "JOIN LOGRO l ON jl.idLogro = l.idLogro;";
+    const [rows3] = await conexion.query(sqlSelect3);
+
     for (let row of rows1) {
         resultado[row.idJugador] = {
             alias: row.alias,
-            anioNacimiento: row.anioNacimiento,
+            añoNacimiento: row.anioNacimiento,
             nivelAlcanzado: row.nivelAlcanzado,
             correo: row.correo,
             partidas: [],
             logros: [],
         };
     }
-
-    const sqlSelect2 =
-        "SELECT idJugador, fechaHora, puntaje, tiempo FROM PARTIDA;";
-    const [rows2] = await conexion.query(sqlSelect2);
 
     for (let row of rows2) {
         resultado[row.idJugador].partidas.push({
@@ -74,13 +81,6 @@ async function obtenerInformacionGeneral(conexion) {
         });
         //console.log(resultado[row.idJugador].partidas);
     }
-
-    const sqlSelect3 =
-        "SELECT jl.idJugador as idJugador, jl.fechaDesbloqueo as fechaDesbloqueo, " +
-        "l.idLogro as idLogro, l.nombre as nombre, l.descripcion as descripcion " +
-        "FROM JUGADOR_LOGRO jl " +
-        "JOIN LOGRO l ON jl.idLogro = l.idLogro;";
-    const [rows3] = await conexion.query(sqlSelect3);
 
     for (let row of rows3) {
         resultado[row.idJugador].logros.push({
@@ -96,10 +96,66 @@ async function obtenerInformacionGeneral(conexion) {
     return resultado;
 }
 
+async function obtenerDesempenoIndividual(conexion, correo) {
+    let sqlSelect =
+        "SELECT idJugador, correo, alias, anioNacimiento, nivelAlcanzado FROM JUGADOR WHERE correo = ?";
+    const [rows1] = await conexion.query(sqlSelect, [correo]);
+    let row = rows1[0];
+
+    let resultado = {};
+    if (row) {
+        resultado = {
+            idAlumno: row.idJugador,
+            username: row.alias,
+            correo: row.correo,
+            nivelActual: row.nivelAlcanzado,
+            añoNacimiento: row.anioNacimiento,
+            partidas: [],
+            logros: [],
+        };
+        const sqlSelect2 =
+            "SELECT p.fechaHora as fechaHora, " +
+            "p.puntaje as puntaje, p.tiempo as tiempo " +
+            "FROM PARTIDA p " +
+            "JOIN JUGADOR j ON p.idJugador = j.idJugador " +
+            "WHERE j.idJugador = ?";
+        const [rows2] = await conexion.query(sqlSelect2, [row.idJugador]);
+
+        const sqlSelect3 =
+              "SELECT jl.fechaDesbloqueo as fechaDesbloqueo, " +
+              "l.idLogro as idLogro, l.nombre as nombre, l.descripcion as descripcion " +
+              "FROM JUGADOR j " +
+              "JOIN JUGADOR_LOGRO jl ON j.idJugador = jl.idJugador " +
+              "JOIN LOGRO l ON jl.idLogro = l.idLogro " +
+              "WHERE j.idJugador = ?";
+        const [rows3] = await conexion.query(sqlSelect3, [row.idJugador]);
+
+        for (let row of rows2) {
+            resultado.partidas.push({
+                fechaHora: row.fechaHora,
+                puntaje: row.puntaje,
+                tiempo: row.tiempo,
+                dificultad: row.dificultad,
+            });
+        }
+        for (let row of rows3) {
+            resultado.logros.push({
+                fechaDesbloqueo: row.fechaDesbloqueo,
+                idLogro: row.idLogro,
+                nombre: row.nombre,
+                descripcion: row.descripcion,
+            });
+        }
+    }
+
+    return resultado;
+}
+
 export default {
     crearConexion,
     obtenerDatosJugador,
     obtenerRankingHistorico,
     obtenerRankingSemanal,
     obtenerInformacionGeneral,
+    obtenerDesempenoIndividual
 };
