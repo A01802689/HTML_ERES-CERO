@@ -80,7 +80,7 @@ app.get("/informacion-general", async (req, res) => {
 });
 
 
-app.get("/busqueda-guion-jugador/:correo", async (req, res) => {
+app.get("/busqueda-jugador-correo/:correo", async (req, res) => {
     let conexion;
     const correo = req.params.correo;
 
