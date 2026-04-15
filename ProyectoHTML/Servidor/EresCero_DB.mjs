@@ -100,26 +100,25 @@ async function obtenerDesempenoIndividual(conexion, correo) {
     let sqlSelect =
         "SELECT idJugador, correo, alias, anioNacimiento, nivelAlcanzado FROM JUGADOR WHERE correo = ?";
     const [rows1] = await conexion.query(sqlSelect, [correo]);
-    let row = rows1[0];
+    let row1 = rows1[0];
 
     let resultado = {};
-    if (row) {
-        resultado = {
-            idAlumno: row.idJugador,
-            username: row.alias,
-            correo: row.correo,
-            nivelActual: row.nivelAlcanzado,
-            añoNacimiento: row.anioNacimiento,
+    if (row1) {
+        resultado[row1.idJugador] = {
+            username: row1.alias,
+            correo: row1.correo,
+            nivelActual: row1.nivelAlcanzado,
+            añoNacimiento: row1.anioNacimiento,
             partidas: [],
             logros: [],
         };
         const sqlSelect2 =
-            "SELECT p.fechaHora as fechaHora, " +
+              "SELECT p.fechaHora as fechaHora, p.dificultad as dificultad, " +
             "p.puntaje as puntaje, p.tiempo as tiempo " +
             "FROM PARTIDA p " +
             "JOIN JUGADOR j ON p.idJugador = j.idJugador " +
             "WHERE j.idJugador = ?";
-        const [rows2] = await conexion.query(sqlSelect2, [row.idJugador]);
+        const [rows2] = await conexion.query(sqlSelect2, [row1.idJugador]);
 
         const sqlSelect3 =
               "SELECT jl.fechaDesbloqueo as fechaDesbloqueo, " +
@@ -128,10 +127,10 @@ async function obtenerDesempenoIndividual(conexion, correo) {
               "JOIN JUGADOR_LOGRO jl ON j.idJugador = jl.idJugador " +
               "JOIN LOGRO l ON jl.idLogro = l.idLogro " +
               "WHERE j.idJugador = ?";
-        const [rows3] = await conexion.query(sqlSelect3, [row.idJugador]);
+        const [rows3] = await conexion.query(sqlSelect3, [row1.idJugador]);
 
         for (let row of rows2) {
-            resultado.partidas.push({
+            resultado[row1.idJugador].partidas.push({
                 fechaHora: row.fechaHora,
                 puntaje: row.puntaje,
                 tiempo: row.tiempo,
@@ -139,7 +138,7 @@ async function obtenerDesempenoIndividual(conexion, correo) {
             });
         }
         for (let row of rows3) {
-            resultado.logros.push({
+            resultado[row1.idJugador].logros.push({
                 fechaDesbloqueo: row.fechaDesbloqueo,
                 idLogro: row.idLogro,
                 nombre: row.nombre,
