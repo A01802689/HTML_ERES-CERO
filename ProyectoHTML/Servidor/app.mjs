@@ -116,6 +116,34 @@ app.post("/registro", async (req, res) => {
     }
 });
 
+app.post("/login", async (req, res) => {
+    let conexion;
+
+    try {
+        conexion = await db.crearConexion();
+        const resultado = await db.iniciarSesion(conexion, req.body);
+
+        if (!resultado) {
+            res.json({
+                message: "Cuenta no encontrada o NIP incorrecto",
+            });
+        } else {
+            res.json({
+                idJugador: resultado,
+            });
+        }
+
+        res.json(resultado);
+    } catch (err) {
+        const { name, message } = err;
+        res.json({ name, message });
+    } finally {
+        if (conexion) {
+            await conexion.end;
+        }
+    }
+});
+
 app.listen(port, () => {
     if (process.env.AWS_LAMBDA_FUNCTION_NAME === undefined) {
         app.listen(port, () => {

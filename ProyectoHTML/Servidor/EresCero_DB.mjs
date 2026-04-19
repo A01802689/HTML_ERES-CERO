@@ -105,7 +105,7 @@ async function obtenerDesempenoIndividual(conexion, correo) {
     let resultado = {};
     if (row1) {
         resultado[row1.idJugador] = {
-            username: row1.alias,
+            alias: row1.alias,
             correo: row1.correo,
             nivelActual: row1.nivelAlcanzado,
             anioNacimiento: row1.anioNacimiento,
@@ -161,6 +161,16 @@ async function registrarUsuario(conexion, body) {
     return resultado[0];
 }
 
+async function iniciarSesion(conexion, body) {
+    const sqlSelect = "SELECT IniciarSesion(?,?)";
+    const [resultado] = await conexion.query(
+        sqlSelect,
+        [body.correo, body.nip],
+    );
+
+    return resultado[0][`IniciarSesion('${body.correo}',${body.nip})`];
+}
+
 export default {
     crearConexion,
     obtenerDatosJugador,
@@ -169,4 +179,5 @@ export default {
     obtenerInformacionGeneral,
     obtenerDesempenoIndividual,
     registrarUsuario,
+    iniciarSesion,
 };
