@@ -94,41 +94,9 @@
 
     </div>
 
-    <a href="PaginaWeb.html"><button class="boton-volver">Volver</button></a>
+    <a href="index.html"><button class="boton-volver">Volver</button></a>
 
-    <script>
-        // Ranking histórico
-        fetch('http://localhost:3000/ranking-historico')
-            .then(res => res.json())
-            .then(datos => {
-                const tabla = document.getElementById('tabla-historico');
-                datos.forEach(fila => {
-                    
-                    tabla.innerHTML += `<tr>
-                        <td>${fila.posicion}</td>
-                        <td>${fila.alias}</td>
-                        <td>${fila.puntaje}</td>
-                        <td>${fila.correo}</td>
-                    </tr>`;
-                });
-            });
-
-        // Ranking semanal
-        fetch('http://localhost:3000/ranking-semanal')
-            .then(res => res.json())
-            .then(datos => {
-                const tabla = document.getElementById('tabla-semanal');
-                datos.forEach(fila => {
-                    tabla.innerHTML += `<tr>
-                        <td>${fila.posicion}</td>
-                        <td>${fila.alias}</td>
-                        <td>${fila.puntaje}</td>
-                        <td>${fila.correo}</td>
-                    </tr>`;
-                });
-            });
-    </script>
-
+ <script src="JS/ranking.js"></script>
 </body>
 
 </html>

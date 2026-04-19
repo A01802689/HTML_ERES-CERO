@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Info Jugador</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            padding: 20px;
+        }
+
+
+        .btn-volver {
+            padding: 10px 20px;
+            background: #e94560;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+
+
+        .btn-volver:hover { background: #c73652; }
+
+
+        .buscador {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+
+        .buscador input {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #e94560;
+            width: 300px;
+            font-size: 15px;
+            background: #16213e;
+            color: #eee;
+        }
+
+
+        .buscador button {
+            padding: 10px 20px;
+            background: #e94560;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+
+        .buscador button:hover { background: #c73652; }
+
+
+        .contenido { display: none; }
+
+
+        .info-jugador {
+            background: #16213e;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #e94560;
+        }
+
+
+        .info-jugador h2 { color: #e94560; margin-bottom: 10px; font-size: 24px; }
+        .info-jugador p { margin: 5px 0; font-size: 15px; }
+
+
+        .graficas {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+
+        .grafica-card {
+            background: #16213e;
+            padding: 20px;
+            border-radius: 10px;
+            border-top: 3px solid #e94560;
+            color:#e94560;
+        }
+
+
+        .grafica-card h3 {
+            color: #e94560;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+
+        .grafica-circular {
+            background: #16213e;
+            padding: 20px;
+            border-radius: 10px;
+            border-top: 3px solid #e94560;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+        }
+
+
+        .grafica-circular h3 {
+            color: #e94560;
+            margin-bottom: 15px;
+            font-size: 16px;
+            align-self: flex-start;
+        }
+
+
+        .grafica-circular canvas { max-width: 300px; }
+
+
+        .logros {
+            background: #16213e;
+            padding: 20px;
+            border-radius: 10px;
+            border-top: 3px solid #e94560;
+        }
+
+
+        .logros h3 { color: #e94560; margin-bottom: 15px; }
+
+
+        .logro-item {
+            padding: 10px;
+            border-bottom: 1px solid #0f3460;
+            display: flex;
+            justify-content: space-between;
+        }
+
+
+        .logro-item:last-child { border-bottom: none; }
+        .logro-nombre { font-weight: bold; color: #e94560; }
+        .logro-fecha { font-size: 13px; color: #aaa; }
+
+
+        .error { color: #e94560; font-size: 16px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+       <a href="index.html"><button class="btn-volver">Volver</button></a>
+
+    <div class="buscador">
+        <input type="text" id="inputCorreo" placeholder="Escribe tu correo..." />
+        <button onclick="buscarJugador()">Buscar</button>
+    </div>
+
+
+    <p class="error" id="error"></p>
+
+
+    <div class="contenido" id="contenido">
+
+
+        <div class="info-jugador">
+            <h2 id="alias"></h2>
+            <p>ID: <span id="idJugador"></span></p>
+            <p>Correo: <span id="correo"></span></p>
+            <p>Año de nacimiento: <span id="anio"></span></p>
+            <p>Nivel alcanzado: <span id="nivel"></span></p>
+        </div>
+
+
+        <div class="graficas">
+            <div class="grafica-card">
+                <h3>Historial de Partidas — Puntaje por partida</h3>
+                <canvas id="graficaLineas"></canvas>
+            </div>
+            <div class="grafica-card">
+                <h3>Tipo de Partidas — Dificultad</h3>
+                <canvas id="graficaBarras"></canvas>
+            </div>
+        </div>
+
+        <div class="logros">
+            <h3>🏆 Logros Desbloqueados</h3>
+            <div id="listaLogros"></div>
+        </div>
+
+
+    </div>
+
+    <script src="JS/desempeno.js"></script>
+
+
+</body>
+</html>
