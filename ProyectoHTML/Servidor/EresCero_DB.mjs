@@ -19,7 +19,7 @@ async function obtenerDatosJugador(conexion, idJugador) {
             idJugador: row.idJugador,
             alias: row.alias,
             correo: row.correo,
-            añoNacimiento: row.anioNacimiento,
+            anioNacimiento: row.anioNacimiento,
             nivelAlcanzado: row.nivelAlcanzado,
         };
     }
@@ -65,7 +65,7 @@ async function obtenerInformacionGeneral(conexion) {
     for (let row of rows1) {
         resultado[row.idJugador] = {
             alias: row.alias,
-            añoNacimiento: row.anioNacimiento,
+            anioNacimiento: row.anioNacimiento,
             nivelAlcanzado: row.nivelAlcanzado,
             correo: row.correo,
             partidas: [],
@@ -108,25 +108,23 @@ async function obtenerDesempenoIndividual(conexion, correo) {
             username: row1.alias,
             correo: row1.correo,
             nivelActual: row1.nivelAlcanzado,
-            añoNacimiento: row1.anioNacimiento,
+            anioNacimiento: row1.anioNacimiento,
             partidas: [],
             logros: [],
         };
-        const sqlSelect2 =
-              "SELECT p.fechaHora as fechaHora, p.dificultad as dificultad, " +
+        const sqlSelect2 = "SELECT p.fechaHora as fechaHora, " +
             "p.puntaje as puntaje, p.tiempo as tiempo " +
             "FROM PARTIDA p " +
             "JOIN JUGADOR j ON p.idJugador = j.idJugador " +
             "WHERE j.idJugador = ?";
         const [rows2] = await conexion.query(sqlSelect2, [row1.idJugador]);
 
-        const sqlSelect3 =
-              "SELECT jl.fechaDesbloqueo as fechaDesbloqueo, " +
-              "l.idLogro as idLogro, l.nombre as nombre, l.descripcion as descripcion " +
-              "FROM JUGADOR j " +
-              "JOIN JUGADOR_LOGRO jl ON j.idJugador = jl.idJugador " +
-              "JOIN LOGRO l ON jl.idLogro = l.idLogro " +
-              "WHERE j.idJugador = ?";
+        const sqlSelect3 = "SELECT jl.fechaDesbloqueo as fechaDesbloqueo, " +
+            "l.idLogro as idLogro, l.nombre as nombre, l.descripcion as descripcion " +
+            "FROM JUGADOR j " +
+            "JOIN JUGADOR_LOGRO jl ON j.idJugador = jl.idJugador " +
+            "JOIN LOGRO l ON jl.idLogro = l.idLogro " +
+            "WHERE j.idJugador = ?";
         const [rows3] = await conexion.query(sqlSelect3, [row1.idJugador]);
 
         for (let row of rows2) {
@@ -145,9 +143,22 @@ async function obtenerDesempenoIndividual(conexion, correo) {
                 descripcion: row.descripcion,
             });
         }
+    } else {
+        resultado["message"] =
+            "No se ha encontrado un usuario con este correo.";
     }
 
     return resultado;
+}
+
+async function registrarUsuario(conexion, body) {
+    const sqlCall = "CALL RegistrarUsuario(?,?,?,?)";
+    const [resultado] = await conexion.query(
+        sqlCall,
+        [body.alias, body.correo, body.nip, body.anioNacimiento],
+    );
+
+    return resultado[0];
 }
 
 export default {
@@ -156,5 +167,6 @@ export default {
     obtenerRankingHistorico,
     obtenerRankingSemanal,
     obtenerInformacionGeneral,
-    obtenerDesempenoIndividual
+    obtenerDesempenoIndividual,
+    registrarUsuario,
 };

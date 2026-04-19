@@ -79,7 +79,6 @@ app.get("/informacion-general", async (req, res) => {
     }
 });
 
-
 app.get("/busqueda-jugador-correo/:correo", async (req, res) => {
     let conexion;
     const correo = req.params.correo;
@@ -87,6 +86,24 @@ app.get("/busqueda-jugador-correo/:correo", async (req, res) => {
     try {
         conexion = await db.crearConexion();
         const resultado = await db.obtenerDesempenoIndividual(conexion, correo);
+
+        res.json(resultado);
+    } catch (err) {
+        const { name, message } = err;
+        res.json({ name, message });
+    } finally {
+        if (conexion) {
+            await conexion.end;
+        }
+    }
+});
+
+app.post("/registro", async (req, res) => {
+    let conexion;
+
+    try {
+        conexion = await db.crearConexion();
+        const resultado = await db.registrarUsuario(conexion, req.body);
 
         res.json(resultado);
     } catch (err) {
