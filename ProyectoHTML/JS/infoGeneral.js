@@ -1,4 +1,4 @@
- fetch('https://5fnoeikzkocxvy3zixmnjss3xi0ffnsc.lambda-url.us-east-1.on.aws/informacion-general')
+ fetch('https://ygtfxb3dtnzrhhgw4sixxcynsq0qnzpw.lambda-url.us-east-1.on.aws/informacion-general')
             .then(res => res.json())
             .then(data => {
                 const contenedor = document.querySelector('.contenedor-scroll');
