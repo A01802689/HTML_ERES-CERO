@@ -161,14 +161,37 @@ async function registrarUsuario(conexion, body) {
     return resultado[0];
 }
 
+//async function iniciarSesion(conexion, body) {
+//  const sqlSelect = "SELECT IniciarSesion(?,?)";
+//  const [resultado] = await conexion.query(sqlSelect, [body.correo, body.nip]);
+//
+//  return resultado[0][`IniciarSesion('${body.correo}',${body.nip})`];
+//}
+
 async function iniciarSesion(conexion, body) {
-    const sqlSelect = "SELECT IniciarSesion(?,?)";
-    const [resultado] = await conexion.query(
-        sqlSelect,
-        [body.correo, body.nip],
+  const sqlSelect = "SELECT IniciarSesion(?,?)";
+  const [resultado] = await conexion.query(sqlSelect, [body.alias, body.nip]);
+
+  return resultado[0][`IniciarSesion('${body.alias}',${body.nip})`];
+}
+
+async function subirPartida(conexion, body) {
+    const sqlInsert =
+        "INSERT INTO PARTIDA(idJugador,fechaHora,puntaje,dificultad,tiempo)" +
+        "VALUES(?,?,?,?,?);";
+
+    const [resultado] = await conexion.execute(
+        sqlInsert,
+        [
+            body.idJugador,
+            body.fechaHora,
+            body.puntaje,
+            body.dificultad,
+            body.tiempo,
+        ],
     );
 
-    return resultado[0][`IniciarSesion('${body.correo}',${body.nip})`];
+    return resultado[0];
 }
 
 export default {
@@ -180,4 +203,5 @@ export default {
     obtenerDesempenoIndividual,
     registrarUsuario,
     iniciarSesion,
+    subirPartida,
 };

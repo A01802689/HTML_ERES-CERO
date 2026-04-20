@@ -144,6 +144,25 @@ app.post("/login", async (req, res) => {
     }
 });
 
+app.post("/partida", async (req, res) => {
+    let conexion;
+
+    try {
+        conexion = await db.crearConexion();
+        const resultado = await db.subirPartida(conexion, req.body);
+        res.json(resultado);
+
+        res.json(resultado);
+    } catch (err) {
+        const { name, message } = err;
+        res.json({ name, message });
+    } finally {
+        if (conexion) {
+            await conexion.end;
+        }
+    }
+});
+
 app.listen(port, () => {
     if (process.env.AWS_LAMBDA_FUNCTION_NAME === undefined) {
         app.listen(port, () => {
