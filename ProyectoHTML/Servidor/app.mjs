@@ -23,7 +23,7 @@ app.get("/datos-jugador/:idJugador", async (req, res) => {
         res.json({ name, message });
     } finally {
         if (conexion) {
-            await conexion.end;
+            await conexion.end();
         }
     }
 });
@@ -40,7 +40,7 @@ app.get("/ranking-historico", async (req, res) => {
         res.json({ name, message });
     } finally {
         if (conexion) {
-            await conexion.end;
+            await conexion.end();
         }
     }
 });
@@ -57,7 +57,7 @@ app.get("/ranking-semanal", async (req, res) => {
         res.json({ name, message });
     } finally {
         if (conexion) {
-            await conexion.end;
+            await conexion.end();
         }
     }
 });
@@ -74,7 +74,7 @@ app.get("/informacion-general", async (req, res) => {
         res.json({ name, message });
     } finally {
         if (conexion) {
-            await conexion.end;
+            await conexion.end();
         }
     }
 });
@@ -93,7 +93,7 @@ app.get("/busqueda-jugador-correo/:correo", async (req, res) => {
         res.json({ name, message });
     } finally {
         if (conexion) {
-            await conexion.end;
+            await conexion.end();
         }
     }
 });
@@ -111,7 +111,7 @@ app.post("/registro", async (req, res) => {
         res.status(400).json({ name, message });
     } finally {
         if (conexion) {
-            await conexion.end;
+            await conexion.end();
         }
     }
 });
@@ -139,7 +139,7 @@ app.post("/login", async (req, res) => {
         res.json({ name, message });
     } finally {
         if (conexion) {
-            await conexion.end;
+            await conexion.end();
         }
     }
 });
@@ -156,7 +156,7 @@ app.post("/partida", async (req, res) => {
         res.json({ name, message });
     } finally {
         if (conexion) {
-            await conexion.end;
+            await conexion.end();
         }
     }
 });
