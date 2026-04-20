@@ -169,10 +169,10 @@ async function registrarUsuario(conexion, body) {
 //}
 
 async function iniciarSesion(conexion, body) {
-  const sqlSelect = "SELECT IniciarSesion(?,?)";
-  const [resultado] = await conexion.query(sqlSelect, [body.alias, body.nip]);
+    const sqlSelect = "SELECT IniciarSesion(?,?)";
+    const [resultado] = await conexion.query(sqlSelect, [body.alias, body.nip]);
 
-  return resultado[0][`IniciarSesion('${body.alias}',${body.nip})`];
+    return resultado[0][`IniciarSesion('${body.alias}',${body.nip})`];
 }
 
 async function subirPartida(conexion, body) {
