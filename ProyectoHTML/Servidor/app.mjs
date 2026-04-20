@@ -151,8 +151,6 @@ app.post("/partida", async (req, res) => {
         conexion = await db.crearConexion();
         const resultado = await db.subirPartida(conexion, req.body);
         res.json(resultado);
-
-        res.json(resultado);
     } catch (err) {
         const { name, message } = err;
         res.json({ name, message });
