@@ -1,169 +1,147 @@
-  let chartLineas = null;
-        let chartBarras = null;
-        let chartCircular = null;
+let graficaPuntaje;
+let graficaDificultad;
 
+window.onload = function () {
+    const ctx1 = document.getElementById('graficaPuntaje').getContext('2d');
+    const ctx2 = document.getElementById('graficaTiempo').getContext('2d');
 
-        async function buscarJugador() {
-            const correo = document.getElementById('inputCorreo').value.trim();
-            const errorEl = document.getElementById('error');
-            errorEl.textContent = '';
-
-
-            if (!correo) {
-                errorEl.textContent = 'Escribe un correo.';
-                return;
+    graficaPuntaje = new Chart(ctx1, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Puntaje',
+                data: [],
+                borderColor: '#f43f5e',
+                borderWidth: 2
+            }]
+        },
+        options: {
+    scales: {
+        x: {
+            ticks: {
+                color: '#ffffff' 
             }
-
-
-            try {
-                const res = await fetch(`https://ygtfxb3dtnzrhhgw4sixxcynsq0qnzpw.lambda-url.us-east-1.on.aws/busqueda-jugador-correo/${correo}`);
-                const data = await res.json();
-
-
-                if (data.error) {
-                    errorEl.textContent = data.error;
-                    document.getElementById('contenido').style.display = 'none';
-                    return;
-                }
-
-
-                const idJugador = Object.keys(data)[0];
-                const jugador = data[idJugador];
-
-
-                mostrarInfo(idJugador, jugador);
-                mostrarGraficas(jugador.partidas);
-                mostrarLogros(jugador.logros);
-
-
-                document.getElementById('contenido').style.display = 'block';
-
-
-            } catch (err) {
-                errorEl.textContent = 'Error al conectar con el servidor.';
+        },
+        y: {
+            ticks: {
+                color: '#ffffff' 
             }
         }
+    }
+}
+    });
 
+   
+    graficaDificultad = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: ["Fácil", "Media", "Difícil"],
+            datasets: [{
+                label: 'Partidas',
+                data: [0, 0, 0],
+                backgroundColor: ['#e94560', '#e0324f', '#b00d02']
+            }]
+        }
+    });
+};
 
-        function mostrarInfo(id, jugador) {
-            document.getElementById('idJugador').textContent = id;
-            document.getElementById('alias').textContent = jugador.alias;
-            document.getElementById('correo').textContent = jugador.correo;
-            document.getElementById('anio').textContent = jugador.anioNacimiento;
-            document.getElementById('nivel').textContent = jugador.nivelAlcanzado;
+async function cargarDatos() {
+    const correo = document.getElementById("correo").value.trim();
+
+    if (!correo) {
+        alert("Ingresa un correo");
+        return;
+    }
+
+    try {
+        const url = `https://5fnoeikzkocxvy3zixmnjss3xi0ffnsc.lambda-url.us-east-1.on.aws/busqueda-jugador-correo/${encodeURIComponent(correo)}`;
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error("No se encontró el alumno");
         }
 
+        const data = await response.json();
 
-        function mostrarGraficas(partidas) {
-            // Gráfica de Líneas
-            const labelsLineas = partidas.map((p, i) => `Partida ${i + 1}`);
-            const puntajes = partidas.map(p => p.puntaje);
+        actualizarGraficas(data);
+        actualizarTablaLogros(data.logros);
 
+    } catch (error) {
+        console.error(error);
+        alert("Error al obtener datos");
+    }
+}
 
-            if (chartLineas) chartLineas.destroy();
-            chartLineas = new Chart(document.getElementById('graficaLineas'), {
-                type: 'line',
-                data: {
-                    labels: labelsLineas,
-                    datasets: [{
-                        label: 'Puntaje',
-                        data: puntajes,
-                        borderColor: '#e94560',
-                        backgroundColor: 'rgba(233,69,96,0.2)',
-                        tension: 0.3,
-                        fill: true,
-                    }]
-                },
-                options: {
-                    plugins: { legend: { labels: { color: '#eee' } } },
-                    scales: {
-                        x: { ticks: { color: '#eee' }, grid: { color: '#0f3460' } },
-                        y: { ticks: { color: '#eee' }, grid: { color: '#0f3460' } }
-                    }
-                }
-            });
+function actualizarGraficas(data) {
 
 
-            // Gráfica de Barras
-            const dificultades = { facil: 0, media: 0, dificil: 0 };
-            partidas.forEach(p => {
-                const d = p.dificultad?.toLowerCase();
-                if (d === 'facil' || d === 'fácil')             dificultades.facil++;
-                else if (d === 'media' || d === 'medio')        dificultades.media++;
-                else if (d === 'dificil' || d === 'difícil')    dificultades.dificil++;
-            });
+    if (!data.partidas || data.partidas.length === 0) {
+        graficaPuntaje.data.labels = [];
+        graficaPuntaje.data.datasets[0].data = [];
+        graficaPuntaje.update();
+
+        graficaDificultad.data.datasets[0].data = [0, 0, 0];
+        graficaDificultad.update();
+
+        return;
+    }
 
 
-            if (chartBarras) chartBarras.destroy();
-            chartBarras = new Chart(document.getElementById('graficaBarras'), {
-                type: 'bar',
-                data: {
-                    labels: ['Fácil', 'Media', 'Difícil'],
-                    datasets: [{
-                        label: 'Partidas',
-                        data: [dificultades.facil, dificultades.media, dificultades.dificil],
-                        backgroundColor: ['#e94560', '#e94560', '#e94560'],
-                    }]
-                },
-                options: {
-                    plugins: { legend: { labels: { color: '#eee' } } },
-                    scales: {
-                        x: { ticks: { color: '#eee' }, grid: { color: '#0f3460' } },
-                        y: { ticks: { color: '#eee', stepSize: 1 }, grid: { color: '#0f3460' } }
-                    }
-                }
-            });
+    const fechas = data.partidas.map(p =>
+        new Date(p.fechaHora).toLocaleDateString()
+    );
+
+    const puntajes = data.partidas.map(p => p.puntaje);
+
+    graficaPuntaje.data.labels = fechas;
+    graficaPuntaje.data.datasets[0].data = puntajes;
+    graficaPuntaje.update();
 
 
-            // Gráfica Circular
-            const tiempoPorDia = {};
-            partidas.forEach(p => {
-                const dia = new Date(p.fechaHora).toLocaleDateString('es-MX');
-                tiempoPorDia[dia] = (tiempoPorDia[dia] || 0) + p.tiempo;
-            });
+    let conteo = {
+        facil: 0,
+        medio: 0,
+        dificil: 0
+    };
 
+    data.partidas.forEach(p => {
+        const d = p.dificultad.toLowerCase();
 
-            const colores = ['#e94560','#f5a623','#4caf50','#2196f3','#9c27b0','#00bcd4'];
+        if (d === "facil") conteo.facil++;
+        else if (d === "medio") conteo.medio++;
+        else if (d === "dificil") conteo.dificil++;
+    });
 
+    graficaDificultad.data.datasets[0].data = [
+        conteo.facil,
+        conteo.medio,
+        conteo.dificil
+    ];
 
-            if (chartCircular) chartCircular.destroy();
-            chartCircular = new Chart(document.getElementById('graficaCircular'), {
-                type: 'pie',
-                data: {
-                    labels: Object.keys(tiempoPorDia),
-                    datasets: [{
-                        data: Object.values(tiempoPorDia),
-                        backgroundColor: colores.slice(0, Object.keys(tiempoPorDia).length),
-                    }]
-                },
-                options: {
-                    plugins: { legend: { labels: { color: '#eee' } } }
-                }
-            });
-        }
+    graficaDificultad.update();
+}
 
+function actualizarTablaLogros(logros) {
 
-        function mostrarLogros(logros) {
-            const lista = document.getElementById('listaLogros');
-            lista.innerHTML = '';
+    const tbody = document.querySelector("#tablaLogros tbody");
+    tbody.innerHTML = "";
 
+    if (!logros || logros.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='4'>Sin logros</td></tr>";
+        return;
+    }
 
-            if (logros.length === 0) {
-                lista.innerHTML = '<p style="color:#aaa">Sin logros aún.</p>';
-                return;
-            }
-
-
-            logros.forEach(l => {
-                const fecha = new Date(l.fechaDesbloqueo).toLocaleDateString('es-MX');
-                lista.innerHTML += `
-                    <div class="logro-item">
-                        <div>
-                            <span class="logro-nombre">${l.nombre}</span>
-                            <p style="font-size:13px; color:#aaa">${l.descripcion}</p>
-                        </div>
-                        <span class="logro-fecha">${fecha}</span>
-                    </div>
-                `;
-            });
-        }
+    logros.forEach(l => {
+        const fila = `
+            <tr>
+                <td>${l.idLogro}</td>
+                <td>${l.nombre}</td>
+                <td>${l.descripcion}</td>
+                <td>${new Date(l.fechaDesbloqueo).toLocaleDateString()}</td>
+            </tr>
+        `;
+        tbody.innerHTML += fila;
+    });
+}
