@@ -1,5 +1,5 @@
 
-        fetch('https://5fnoeikzkocxvy3zixmnjss3xi0ffnsc.lambda-url.us-east-1.on.aws/ranking-historico')
+        fetch('https://ygtfxb3dtnzrhhgw4sixxcynsq0qnzpw.lambda-url.us-east-1.on.aws/ranking-historico')
             .then(res => res.json())
             .then(datos => {
                 const tabla = document.getElementById('tabla-historico');
@@ -15,7 +15,7 @@
             });
 
         // Ranking semanal
-        fetch('https://5fnoeikzkocxvy3zixmnjss3xi0ffnsc.lambda-url.us-east-1.on.aws/ranking-semanal')
+        fetch('https://ygtfxb3dtnzrhhgw4sixxcynsq0qnzpw.lambda-url.us-east-1.on.aws/ranking-semanal')
             .then(res => res.json())
             .then(datos => {
                 const tabla = document.getElementById('tabla-semanal');
