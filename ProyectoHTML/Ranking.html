@@ -10,6 +10,8 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
+            background: #1a1a2e;
+            color: #eee;
         }
 
         h1 {
@@ -26,7 +28,7 @@
         }
 
         .recuadro {
-            border: 3px solid black;
+            border: 3px solid #e94560;
             padding: 2vh 2vw;
             width: 35vw;
             height: 60vh;
@@ -46,14 +48,14 @@
         }
 
         th, td {
-            border: 1px solid black;
+            border: 1px solid rgb(255, 255, 255);
             padding: 1vh;
             font-size: 1.5vw;
             white-space: nowrap;
         }
 
         th {
-            background-color: #72b4f6;
+            background-color: #e94560;
         }
 
         .boton-volver {
@@ -61,9 +63,9 @@
             margin: 3vh auto 0 auto;
             font-size: 1.5vw;
             padding: 1vh 2vw;
-            background-color: #72b4f6;
-            border: 2px solid black;
+            background-color: #e94560;
             cursor: pointer;
+            color: #eee;
         }
 
         a {
@@ -80,52 +82,23 @@
 
         <div class="recuadro">
             <h2>Ranking Histórico</h2>
-            <table>
-                <tr><th>Posición</th><th>Jugador</th><th>Puntaje</th></tr>
+            <table id="tabla-historico">
+                <tr><th>Posición</th><th>Jugador</th><th>Puntaje</th> <th>correo</th></tr>
             </table>
         </div>
 
         <div class="recuadro">
             <h2>Ranking Semanal</h2>
-            <table>
-                <tr><th>Posición</th><th>Jugador</th><th>Puntaje</th></tr>
+            <table id="tabla-semanal">
+                <tr><th>Posición</th><th>Jugador</th><th>Puntaje</th> <th>correo</th>   </tr>
             </table>
         </div>
 
     </div>
 
-    <a href="PaginaWeb.html"><button class="boton-volver">Volver</button></a>
+    <a href="index.html"><button class="boton-volver">Volver</button></a>
 
-    <script>
-        // Ranking histórico
-        fetch('http://localhost:3000/ranking-historico')
-            .then(res => res.json())
-            .then(datos => {
-                const tabla = document.querySelectorAll('table')[0];
-                datos.forEach(fila => {
-                    tabla.innerHTML += `<tr>
-                        <td>${fila.posicion}</td>
-                        <td>${fila.alias}</td>
-                        <td>${fila.puntaje}</td>
-                    </tr>`;
-                });
-            });
-
-        // Ranking semanal
-        fetch('http://localhost:3000/ranking-semanal')
-            .then(res => res.json())
-            .then(datos => {
-                const tabla = document.querySelectorAll('table')[1];
-                datos.forEach(fila => {
-                    tabla.innerHTML += `<tr>
-                        <td>${fila.posicion}</td>
-                        <td>${fila.alias}</td>
-                        <td>${fila.puntaje}</td>
-                    </tr>`;
-                });
-            });
-    </script>
-
+ <script src="JS/ranking.js"></script>
 </body>
 
 </html>
