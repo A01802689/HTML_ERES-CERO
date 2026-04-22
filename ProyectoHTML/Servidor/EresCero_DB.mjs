@@ -24,25 +24,16 @@ async function obtenerDatosJugador(conexion, idJugador) {
         };
     }
 }
-
 async function obtenerRankingHistorico(conexion) {
-    const sqlSelect = "SELECT rh.posicion as posicion, j.alias as alias," +
-        "rh.puntaje as puntaje, j.correo as correo " +
-        "FROM RANKING_HISTORICO rh " +
-        "JOIN JUGADOR j ON rh.idJugador = j.idJugador " +
-        "ORDER BY rh.posicion ASC";
-    const [rows] = await conexion.query(sqlSelect);
-    return rows;
+    const sqlSelect = "CALL CalcularRankingHistorico";
+    const [rows] = await conexion.execute(sqlSelect);
+    return rows[0];
 }
 
 async function obtenerRankingSemanal(conexion) {
-    const sqlSelect = "SELECT rs.posicion as posicion, j.alias as alias," +
-        "rs.puntaje as puntaje, j.correo as correo " +
-        "FROM RANKING_SEMANAL rs " +
-        "JOIN JUGADOR j ON rs.idJugador = j.idJugador " +
-        "ORDER BY rs.posicion ASC";
-    const [rows] = await conexion.query(sqlSelect);
-    return rows;
+    const sqlSelect = "CALL CalcularRankingSemanal;";
+    const [rows] = await conexion.execute(sqlSelect);
+    return rows[0];
 }
 
 async function obtenerInformacionGeneral(conexion) {
@@ -158,15 +149,8 @@ async function registrarUsuario(conexion, body) {
         [body.alias, body.correo, body.nip, body.anioNacimiento],
     );
 
-    return resultado[0];
+    return resultado[0][0]["LAST_INSERT_ID()"];
 }
-
-//async function iniciarSesion(conexion, body) {
-//  const sqlSelect = "SELECT IniciarSesion(?,?)";
-//  const [resultado] = await conexion.query(sqlSelect, [body.correo, body.nip]);
-//
-//  return resultado[0][`IniciarSesion('${body.correo}',${body.nip})`];
-//}
 
 async function iniciarSesion(conexion, body) {
     const sqlSelect = "SELECT IniciarSesion(?,?)";

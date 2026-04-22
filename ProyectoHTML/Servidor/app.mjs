@@ -105,10 +105,16 @@ app.post("/registro", async (req, res) => {
         conexion = await db.crearConexion();
         const resultado = await db.registrarUsuario(conexion, req.body);
 
-        res.status(200).json(resultado);
+        res.status(200).json({
+            idJugador: resultado,
+            alias: req.body.alias,
+        });
     } catch (err) {
-        const { name, message } = err;
-        res.status(400).json({ name, message });
+        //const { name, message } = err;
+        //res.status(400).json({ name, err.message });
+        res.status(400).json({
+            error: err.message,
+        });
     } finally {
         if (conexion) {
             await conexion.end();
@@ -125,11 +131,12 @@ app.post("/login", async (req, res) => {
 
         if (!resultado) {
             res.status(400).json({
-                message: "Cuenta no encontrada o NIP incorrecto",
+                error: "Cuenta no encontrada",
             });
         } else {
             res.json({
                 idJugador: resultado,
+                alias: req.body.alias,
             });
         }
 
