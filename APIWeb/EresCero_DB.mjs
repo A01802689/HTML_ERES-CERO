@@ -10,17 +10,29 @@ async function crearConexion() {
 }
 
 async function obtenerDatosJugador(conexion, idJugador) {
-    let sqlSelect =
-        "SELECT idJugador, alias, anioNacimiento, nivelAlcanzado FROM JUGADOR WHERE idJugador = ?";
-    const [rows] = await conexion.query(sqlSelect, [idJugador]);
-    let row = rows[0];
-    if (row) {
+    let sqlSelect1 =
+        "SELECT idJugador, alias, anioNacimiento, nivelAlcanzado FROM JUGADOR WHERE idJugador = ?;";
+    const [rows1] = await conexion.query(sqlSelect1, [idJugador]);
+
+    let sqlSelect2 =
+        "SELECT COALESCE(SUM(p.puntaje), 0) as puntajeAcumulado, " +
+        "COUNT(p.idJugador) as totalPartidas " +
+        "FROM JUGADOR j " +
+        "JOIN PARTIDA p ON j.idJugador = p.idJugador " +
+        "WHERE j.idJugador = ?;";
+    const [rows2] = await conexion.query(sqlSelect2, [idJugador]);
+
+    let row1 = rows1[0];
+    let row2 = rows2[0];
+    if (row1) {
         return {
-            idJugador: row.idJugador,
-            alias: row.alias,
-            correo: row.correo,
-            anioNacimiento: row.anioNacimiento,
-            nivelAlcanzado: row.nivelAlcanzado,
+            idJugador: row1.idJugador,
+            alias: row1.alias,
+            correo: row1.correo,
+            anioNacimiento: row1.anioNacimiento,
+            nivelAlcanzado: row1.nivelAlcanzado,
+            puntajeAcumulado: parseInt(row2.puntajeAcumulado),
+            totalPartidas: row2.totalPartidas,
         };
     }
 }
