@@ -178,6 +178,32 @@ async function subirPartida(conexion, body) {
     return resultado[0];
 }
 
+async function asignarLogro(conexion, body) {
+    const sqlInsert =
+        "INSERT INTO JUGADOR_LOGRO(idJugador, idLogro, fechaDesbloqueo) VALUES (?,?,?);";
+
+    const [resultado] = await conexion.execute(sqlInsert, [
+        body.idJugador,
+        body.idLogro,
+        body.fechaDesbloqueo,
+    ]);
+
+    return resultado[0];
+}
+
+async function asignarAspecto(conexion, body) {
+    const sqlInsert =
+        "INSERT INTO JUGADOR_ASPECTO(idJugador, idAspecto, fechaDesbloqueo) VALUES (?,?,?);";
+
+    const [resultado] = await conexion.execute(sqlInsert, [
+        body.idJugador,
+        body.idAspecto,
+        body.fechaDesbloqueo,
+    ]);
+
+    return resultado[0];
+}
+
 export default {
     crearConexion,
     obtenerDatosJugador,
@@ -188,4 +214,6 @@ export default {
     registrarUsuario,
     iniciarSesion,
     subirPartida,
+    asignarLogro,
+    asignarAspecto,
 };

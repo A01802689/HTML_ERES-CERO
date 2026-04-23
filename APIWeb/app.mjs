@@ -168,6 +168,40 @@ app.post("/partida", async (req, res) => {
     }
 });
 
+app.post("/logro", async (req, res) => {
+    let conexion;
+
+    try {
+        conexion = await db.crearConexion();
+        const resultado = await db.asignarLogro(conexion, req.body);
+        res.json(resultado);
+    } catch (err) {
+        const { name, message } = err;
+        res.json({ name, message });
+    } finally {
+        if (conexion) {
+            await conexion.end();
+        }
+    }
+});
+
+app.post("/aspecto", async (req, res) => {
+    let conexion;
+
+    try {
+        conexion = await db.crearConexion();
+        const resultado = await db.asignarAspecto(conexion, req.body);
+        res.json(resultado);
+    } catch (err) {
+        const { name, message } = err;
+        res.json({ name, message });
+    } finally {
+        if (conexion) {
+            await conexion.end();
+        }
+    }
+});
+
 app.listen(port, () => {
     if (process.env.AWS_LAMBDA_FUNCTION_NAME === undefined) {
         app.listen(port, () => {
