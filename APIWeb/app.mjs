@@ -17,10 +17,10 @@ app.get("/datos-jugador/:idJugador", async (req, res) => {
     try {
         conexion = await db.crearConexion();
         const resultado = await db.obtenerDatosJugador(conexion, idJugador);
-        res.json(resultado);
+        res.status(200).json(resultado);
     } catch (err) {
         const { name, message } = err;
-        res.json({ name, message });
+        res.status(404).json({ name, message });
     } finally {
         if (conexion) {
             await conexion.end();

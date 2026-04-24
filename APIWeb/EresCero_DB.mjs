@@ -9,33 +9,51 @@ async function crearConexion() {
     });
 }
 
+// DEPRECATED
+// async function obtenerDatosJugador(conexion, idJugador) {
+//     let sqlSelect1 =
+//         "SELECT idJugador, alias, anioNacimiento, nivelAlcanzado FROM JUGADOR WHERE idJugador = ?;";
+//     const [rows1] = await conexion.query(sqlSelect1, [idJugador]);
+
+//     let sqlSelect2 =
+//         "SELECT COALESCE(SUM(p.puntaje), 0) as puntajeAcumulado, " +
+//         "COUNT(p.idJugador) as totalPartidas " +
+//         "FROM JUGADOR j " +
+//         "JOIN PARTIDA p ON j.idJugador = p.idJugador " +
+//         "WHERE j.idJugador = ?;";
+//     const [rows2] = await conexion.query(sqlSelect2, [idJugador]);
+
+//     let row1 = rows1[0];
+//     let row2 = rows2[0];
+
+//     return {
+//         idJugador: row1.idJugador,
+//         alias: row1.alias,
+//         correo: row1.correo,
+//         anioNacimiento: row1.anioNacimiento,
+//         nivelAlcanzado: row1.nivelAlcanzado,
+//         puntajeAcumulado: parseInt(row2.puntajeAcumulado),
+//         totalPartidas: row2.totalPartidas,
+//     };
+// }
+
 async function obtenerDatosJugador(conexion, idJugador) {
-    let sqlSelect1 =
-        "SELECT idJugador, alias, anioNacimiento, nivelAlcanzado FROM JUGADOR WHERE idJugador = ?;";
+    let sqlSelect1 = "CALL DatosJugador(?);";
     const [rows1] = await conexion.query(sqlSelect1, [idJugador]);
 
-    let sqlSelect2 =
-        "SELECT COALESCE(SUM(p.puntaje), 0) as puntajeAcumulado, " +
-        "COUNT(p.idJugador) as totalPartidas " +
-        "FROM JUGADOR j " +
-        "JOIN PARTIDA p ON j.idJugador = p.idJugador " +
-        "WHERE j.idJugador = ?;";
-    const [rows2] = await conexion.query(sqlSelect2, [idJugador]);
+    let row1 = rows1[0][0];
 
-    let row1 = rows1[0];
-    let row2 = rows2[0];
-    if (row1) {
-        return {
-            idJugador: row1.idJugador,
-            alias: row1.alias,
-            correo: row1.correo,
-            anioNacimiento: row1.anioNacimiento,
-            nivelAlcanzado: row1.nivelAlcanzado,
-            puntajeAcumulado: parseInt(row2.puntajeAcumulado),
-            totalPartidas: row2.totalPartidas,
-        };
-    }
+    return {
+        idJugador: row1.idJugador,
+        alias: row1.alias,
+        correo: row1.correo,
+        anioNacimiento: row1.anioNacimiento,
+        nivelAlcanzado: row1.nivelAlcanzado,
+        puntajeAcumulado: row1.puntajeAcumulado,
+        totalPartidas: row1.totalPartidas,
+    };
 }
+
 async function obtenerRankingHistorico(conexion) {
     const sqlSelect = "CALL CalcularRankingHistorico";
     const [rows] = await conexion.execute(sqlSelect);
