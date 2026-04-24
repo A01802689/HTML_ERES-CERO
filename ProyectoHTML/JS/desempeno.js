@@ -1,8 +1,10 @@
 let graficaPuntaje;
 let graficaDificultad;
 
-window.onload = function () {
-    const ctx1 = document.getElementById('graficaPuntaje').getContext('2d');
+//cargar un evento clicl n.addEventListener(¨Keydown, event¨)
+
+window.onload = function () { // caundo la pagina termina de cargar, hace las funciones
+    const ctx1 = document.getElementById('graficaPuntaje').getContext('2d'); // lo identifca con canvas en HTML
     const ctx2 = document.getElementById('graficaTiempo').getContext('2d');
 
     graficaPuntaje = new Chart(ctx1, {
@@ -42,12 +44,26 @@ window.onload = function () {
                 data: [0, 0, 0],
                 backgroundColor: ['#e94560', '#e0324f', '#b00d02']
             }]
+        },
+               options: {
+    scales: {
+        x: {
+            ticks: {
+                color: '#ffffff' 
+            }
+        },
+        y: {
+            ticks: {
+                color: '#ffffff' 
+            }
         }
-    });
+    }
+}
+});
 };
 
 async function cargarDatos() {
-    const correo = document.getElementById("correo").value.trim();
+    const correo = document.getElementById("correo").value.trim();// cortar los espacios al momento que escribe el correo
 
     if (!correo) {
         alert("Ingresa un correo");
@@ -55,13 +71,13 @@ async function cargarDatos() {
     }
 
     try {
-        const url = `https://5fnoeikzkocxvy3zixmnjss3xi0ffnsc.lambda-url.us-east-1.on.aws/busqueda-jugador-correo/${encodeURIComponent(correo)}`;
+        const response = await fetch(`https://5fnoeikzkocxvy3zixmnjss3xi0ffnsc.lambda-url.us-east-1.on.aws/busqueda-jugador-correo/${encodeURIComponent(correo)}`);
 
-        const response = await fetch(url);
-
-        if (!response.ok) {
-            throw new Error("No se encontró el alumno");
+        if (response.ok === false) { //algo em falla en esta seccion
+            console.log("No se encontró el alumno");
+            return;
         }
+
 
         const data = await response.json();
 
@@ -76,7 +92,6 @@ async function cargarDatos() {
 
 function actualizarGraficas(data) {
 
-
     if (!data.partidas || data.partidas.length === 0) {
         graficaPuntaje.data.labels = [];
         graficaPuntaje.data.datasets[0].data = [];
@@ -88,17 +103,17 @@ function actualizarGraficas(data) {
         return;
     }
 
+    const fechas = [];
+    const puntajes = [];
 
-    const fechas = data.partidas.map(p =>
-        new Date(p.fechaHora).toLocaleDateString()
-    );
-
-    const puntajes = data.partidas.map(p => p.puntaje);
+    for (let i = 0; i < data.partidas.length; i++) {
+        fechas.push(new Date(data.partidas[i].fechaHora).toLocaleDateString()); //toLocalDataString es un metodo que cmmbia la hr a una nomral
+        puntajes.push(data.partidas[i].puntaje);
+    }
 
     graficaPuntaje.data.labels = fechas;
     graficaPuntaje.data.datasets[0].data = puntajes;
     graficaPuntaje.update();
-
 
     let conteo = {
         facil: 0,
@@ -106,13 +121,13 @@ function actualizarGraficas(data) {
         dificil: 0
     };
 
-    data.partidas.forEach(p => {
-        const d = p.dificultad.toLowerCase();
+    for (let i = 0; i < data.partidas.length; i++) {
+        const d = data.partidas[i].dificultad.toLowerCase();
 
         if (d === "facil") conteo.facil++;
         else if (d === "medio") conteo.medio++;
         else if (d === "dificil") conteo.dificil++;
-    });
+    }
 
     graficaDificultad.data.datasets[0].data = [
         conteo.facil,
