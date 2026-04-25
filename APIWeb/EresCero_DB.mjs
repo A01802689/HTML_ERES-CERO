@@ -49,7 +49,7 @@ async function obtenerDatosJugador(conexion, idJugador) {
         correo: row1.correo,
         anioNacimiento: row1.anioNacimiento,
         nivelAlcanzado: row1.nivelAlcanzado,
-        puntajeAcumulado: row1.puntajeAcumulado,
+        puntajeAcumulado: parseInt(row1.puntajeAcumulado),
         totalPartidas: row1.totalPartidas,
     };
 }
@@ -194,7 +194,20 @@ async function subirPartida(conexion, body) {
         "INSERT INTO PARTIDA(idJugador,fechaHora,puntaje,dificultad,tiempo)" +
         "VALUES(?,?,?,?,?);";
 
-    const [resultado] = await conexion.execute(
+    // const [resultado] = await conexion.execute(
+    //     sqlInsert,
+    //     [
+    //         body.idJugador,
+    //         body.fechaHora,
+    //         body.puntaje,
+    //         body.dificultad,
+    //         body.tiempo,
+    //     ],
+    // );
+
+    // return resultado[0];
+
+    await conexion.execute(
         sqlInsert,
         [
             body.idJugador,
@@ -205,12 +218,20 @@ async function subirPartida(conexion, body) {
         ],
     );
 
-    return resultado[0];
+    return { message: "Partida subida exitosamente." };
 }
 
 async function asignarLogro(conexion, body) {
     const sqlInsert =
         "INSERT INTO JUGADOR_LOGRO(idJugador, idLogro, fechaDesbloqueo) VALUES (?,?,?);";
+
+    // const [resultado] = await conexion.execute(sqlInsert, [
+    //     body.idJugador,
+    //     body.idLogro,
+    //     body.fechaDesbloqueo,
+    // ]);
+
+    // return resultado[0];
 
     const [resultado] = await conexion.execute(sqlInsert, [
         body.idJugador,
@@ -218,20 +239,28 @@ async function asignarLogro(conexion, body) {
         body.fechaDesbloqueo,
     ]);
 
-    return resultado[0];
+    return { message: "Logro desbloqueado." };
 }
 
 async function asignarAspecto(conexion, body) {
     const sqlInsert =
         "INSERT INTO JUGADOR_ASPECTO(idJugador, idAspecto, fechaDesbloqueo) VALUES (?,?,?);";
 
-    const [resultado] = await conexion.execute(sqlInsert, [
+    // const [resultado] = await conexion.execute(sqlInsert, [
+    //     body.idJugador,
+    //     body.idAspecto,
+    //     body.fechaDesbloqueo,
+    // ]);
+
+    // return resultado[0];
+
+    await conexion.execute(sqlInsert, [
         body.idJugador,
         body.idAspecto,
         body.fechaDesbloqueo,
     ]);
 
-    return resultado[0];
+    return { message: "Aspecto desbloqueado." };
 }
 
 export default {

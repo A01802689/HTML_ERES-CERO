@@ -87,7 +87,11 @@ app.get("/busqueda-jugador-correo/:correo", async (req, res) => {
         conexion = await db.crearConexion();
         const resultado = await db.obtenerDesempenoIndividual(conexion, correo);
 
-        res.json(resultado);
+        if (!resultado["message"]) {
+            res.json(resultado);
+        } else {
+            res.status(404).json(resultado);
+        }
     } catch (err) {
         const { name, message } = err;
         res.json({ name, message });
@@ -160,7 +164,7 @@ app.post("/partida", async (req, res) => {
         res.json(resultado);
     } catch (err) {
         const { name, message } = err;
-        res.json({ name, message });
+        res.status(400).json({ name, message });
     } finally {
         if (conexion) {
             await conexion.end();
@@ -177,7 +181,7 @@ app.post("/logro", async (req, res) => {
         res.json(resultado);
     } catch (err) {
         const { name, message } = err;
-        res.json({ name, message });
+        res.status(400).json({ name, message });
     } finally {
         if (conexion) {
             await conexion.end();
@@ -194,7 +198,7 @@ app.post("/aspecto", async (req, res) => {
         res.json(resultado);
     } catch (err) {
         const { name, message } = err;
-        res.json({ name, message });
+        res.status(400).json({ name, message });
     } finally {
         if (conexion) {
             await conexion.end();
