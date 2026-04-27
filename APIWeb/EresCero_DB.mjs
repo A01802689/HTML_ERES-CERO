@@ -1,0 +1,306 @@
+import mysql from "mysql2/promise";
+
+async function crearConexion() {
+    return await mysql.createConnection({
+        host: process.env.MYSQL_HOST ?? "localhost",
+        user: process.env.MYSQL_USER ?? "root",
+        password: process.env.MYSQL_PASSWORD ?? "",
+        database: "EresCero",
+    });
+}
+
+// DEPRECATED
+// async function obtenerDatosJugador(conexion, idJugador) {
+//     let sqlSelect1 =
+//         "SELECT idJugador, alias, anioNacimiento, nivelAlcanzado FROM JUGADOR WHERE idJugador = ?;";
+//     const [rows1] = await conexion.query(sqlSelect1, [idJugador]);
+
+//     let sqlSelect2 =
+//         "SELECT COALESCE(SUM(p.puntaje), 0) as puntajeAcumulado, " +
+//         "COUNT(p.idJugador) as totalPartidas " +
+//         "FROM JUGADOR j " +
+//         "JOIN PARTIDA p ON j.idJugador = p.idJugador " +
+//         "WHERE j.idJugador = ?;";
+//     const [rows2] = await conexion.query(sqlSelect2, [idJugador]);
+
+//     let row1 = rows1[0];
+//     let row2 = rows2[0];
+
+//     return {
+//         idJugador: row1.idJugador,
+//         alias: row1.alias,
+//         correo: row1.correo,
+//         anioNacimiento: row1.anioNacimiento,
+//         nivelAlcanzado: row1.nivelAlcanzado,
+//         puntajeAcumulado: parseInt(row2.puntajeAcumulado),
+//         totalPartidas: row2.totalPartidas,
+//     };
+// }
+
+async function obtenerDatosJugador(conexion, idJugador) {
+    let sqlSelect1 = "CALL DatosJugador(?);";
+    const [rows1] = await conexion.query(sqlSelect1, [idJugador]);
+
+    let row1 = rows1[0][0];
+
+    return {
+        idJugador: row1.idJugador,
+        alias: row1.alias,
+        correo: row1.correo,
+        anioNacimiento: row1.anioNacimiento,
+        nivelAlcanzado: row1.nivelAlcanzado,
+        puntajeAcumulado: parseInt(row1.puntajeAcumulado),
+        totalPartidas: row1.totalPartidas,
+    };
+}
+
+async function obtenerRankingHistorico(conexion) {
+    const sqlSelect = "CALL CalcularRankingHistorico";
+    const [rows] = await conexion.execute(sqlSelect);
+    return rows[0];
+}
+
+async function obtenerRankingSemanal(conexion) {
+    const sqlSelect = "CALL CalcularRankingSemanal;";
+    const [rows] = await conexion.execute(sqlSelect);
+    return rows[0];
+}
+
+async function obtenerInformacionGeneral(conexion) {
+    let resultado = {};
+    const sqlSelect1 =
+        "SELECT idJugador, alias, anioNacimiento, nivelAlcanzado, correo FROM JUGADOR;";
+    const [rows1] = await conexion.query(sqlSelect1);
+
+    const sqlSelect2 =
+        "SELECT idJugador, fechaHora, puntaje, tiempo FROM PARTIDA;";
+    const [rows2] = await conexion.query(sqlSelect2);
+
+    const sqlSelect3 =
+        "SELECT jl.idJugador as idJugador, jl.fechaDesbloqueo as fechaDesbloqueo, " +
+        "l.idLogro as idLogro, l.nombre as nombre, l.descripcion as descripcion " +
+        "FROM JUGADOR_LOGRO jl " +
+        "JOIN LOGRO l ON jl.idLogro = l.idLogro;";
+    const [rows3] = await conexion.query(sqlSelect3);
+
+    for (let row of rows1) {
+        resultado[row.idJugador] = {
+            alias: row.alias,
+            anioNacimiento: row.anioNacimiento,
+            nivelAlcanzado: row.nivelAlcanzado,
+            correo: row.correo,
+            partidas: [],
+            logros: [],
+        };
+    }
+
+    for (let row of rows2) {
+        resultado[row.idJugador].partidas.push({
+            fechaHora: row.fechaHora,
+            puntaje: row.puntaje,
+            tiempo: row.tiempo,
+        });
+        //console.log(resultado[row.idJugador].partidas);
+    }
+
+    for (let row of rows3) {
+        resultado[row.idJugador].logros.push({
+            fechaDesbloqueo: row.fechaDesbloqueo,
+            idLogro: row.idLogro,
+            nombre: row.nombre,
+            descripcion: row.descripcion,
+        });
+        //console.log(row);
+        //console.log(resultado[row.idJugador].logros);
+    }
+
+    return resultado;
+}
+
+async function obtenerDesempenoIndividual(conexion, correo) {
+    let sqlSelect =
+        "SELECT idJugador, correo, alias, anioNacimiento, nivelAlcanzado FROM JUGADOR WHERE correo = ?";
+    const [rows1] = await conexion.query(sqlSelect, [correo]);
+    let row1 = rows1[0];
+
+    let resultado = {};
+    if (row1) {
+        resultado = {
+            idJugador: row1.idJugador,
+            alias: row1.alias,
+            correo: row1.correo,
+            nivelActual: row1.nivelAlcanzado,
+            anioNacimiento: row1.anioNacimiento,
+            partidas: [],
+            logros: [],
+        };
+        const sqlSelect2 = "SELECT p.fechaHora as fechaHora, " +
+            "p.puntaje as puntaje, p.tiempo as tiempo " +
+            "FROM PARTIDA p " +
+            "JOIN JUGADOR j ON p.idJugador = j.idJugador " +
+            "WHERE j.idJugador = ?";
+        const [rows2] = await conexion.query(sqlSelect2, [row1.idJugador]);
+
+        const sqlSelect3 = "SELECT jl.fechaDesbloqueo as fechaDesbloqueo, " +
+            "l.idLogro as idLogro, l.nombre as nombre, l.descripcion as descripcion " +
+            "FROM JUGADOR j " +
+            "JOIN JUGADOR_LOGRO jl ON j.idJugador = jl.idJugador " +
+            "JOIN LOGRO l ON jl.idLogro = l.idLogro " +
+            "WHERE j.idJugador = ?";
+        const [rows3] = await conexion.query(sqlSelect3, [row1.idJugador]);
+
+        for (let row of rows2) {
+            resultado.partidas.push({
+                fechaHora: row.fechaHora,
+                puntaje: row.puntaje,
+                tiempo: row.tiempo,
+                dificultad: row.dificultad,
+            });
+        }
+        for (let row of rows3) {
+            resultado.logros.push({
+                fechaDesbloqueo: row.fechaDesbloqueo,
+                idLogro: row.idLogro,
+                nombre: row.nombre,
+                descripcion: row.descripcion,
+            });
+        }
+    } else {
+        resultado["message"] =
+            "No se ha encontrado un usuario con este correo.";
+    }
+
+    return resultado;
+}
+
+async function registrarUsuario(conexion, body) {
+    const sqlCall = "CALL RegistrarUsuario(?,?,?,?)";
+    const [resultado] = await conexion.query(
+        sqlCall,
+        [body.alias, body.correo, body.nip, body.anioNacimiento],
+    );
+
+    return resultado[0][0]["LAST_INSERT_ID()"];
+}
+
+async function iniciarSesion(conexion, body) {
+    const sqlSelect = "SELECT IniciarSesion(?,?)";
+    const [resultado] = await conexion.query(sqlSelect, [body.alias, body.nip]);
+
+    return resultado[0][`IniciarSesion('${body.alias}',${body.nip})`];
+}
+
+async function subirPartida(conexion, body) {
+    const sqlInsert =
+        "INSERT INTO PARTIDA(idJugador,fechaHora,puntaje,dificultad,tiempo)" +
+        "VALUES(?,?,?,?,?);";
+
+    // const [resultado] = await conexion.execute(
+    //     sqlInsert,
+    //     [
+    //         body.idJugador,
+    //         body.fechaHora,
+    //         body.puntaje,
+    //         body.dificultad,
+    //         body.tiempo,
+    //     ],
+    // );
+
+    // return resultado[0];
+
+    await conexion.execute(
+        sqlInsert,
+        [
+            body.idJugador,
+            body.fechaHora,
+            body.puntaje,
+            body.dificultad,
+            body.tiempo,
+        ],
+    );
+
+    return { message: "Partida subida exitosamente." };
+}
+
+async function asignarLogro(conexion, body) {
+    const sqlInsert =
+        "INSERT IGNORE INTO JUGADOR_LOGRO(idJugador, idLogro, fechaDesbloqueo) VALUES (?,?,?);";
+
+    // const [resultado] = await conexion.execute(sqlInsert, [
+    //     body.idJugador,
+    //     body.idLogro,
+    //     body.fechaDesbloqueo,
+    // ]);
+
+    // return resultado[0];
+
+    const [resultado] = await conexion.execute(sqlInsert, [
+        body.idJugador,
+        body.idLogro,
+        body.fechaDesbloqueo,
+    ]);
+
+    return { message: "Logro desbloqueado." };
+}
+
+async function asignarAspecto(conexion, body) {
+    const sqlInsert =
+        "INSERT IGNORE INTO JUGADOR_ASPECTO(idJugador, idAspecto, desbloqueado, fechaDesbloqueo) VALUES (?,?,1,?);";
+
+    // const [resultado] = await conexion.execute(sqlInsert, [
+    //     body.idJugador,
+    //     body.idAspecto,
+    //     body.fechaDesbloqueo,
+    // ]);
+
+    // return resultado[0];
+
+    await conexion.execute(sqlInsert, [
+        body.idJugador,
+        body.idAspecto,
+        body.fechaDesbloqueo,
+    ]);
+
+    return { message: "Aspecto desbloqueado." };
+}
+
+async function obtenerLogrosJugador(conexion, idJugador) {
+    const [rows] = await conexion.query(
+        "SELECT idLogro FROM JUGADOR_LOGRO WHERE idJugador = ?",
+        [idJugador],
+    );
+    return rows;
+}
+
+async function obtenerAspectosJugador(conexion, idJugador) {
+    const [rows] = await conexion.query(
+        "SELECT idAspecto FROM JUGADOR_ASPECTO WHERE idJugador = ? AND desbloqueado = 1",
+        [idJugador],
+    );
+    return rows;
+}
+
+async function obtenerPuntajeTotal(conexion, idJugador) {
+    const [rows] = await conexion.query(
+        "SELECT COALESCE(SUM(puntaje), 0) as puntajeTotal FROM PARTIDA WHERE idJugador = ?",
+        [idJugador],
+    );
+    return { puntajeTotal: rows[0].puntajeTotal };
+}
+
+export default {
+    crearConexion,
+    obtenerDatosJugador,
+    obtenerRankingHistorico,
+    obtenerRankingSemanal,
+    obtenerInformacionGeneral,
+    obtenerDesempenoIndividual,
+    registrarUsuario,
+    iniciarSesion,
+    subirPartida,
+    asignarLogro,
+    asignarAspecto,
+    obtenerLogrosJugador,
+    obtenerAspectosJugador,
+    obtenerPuntajeTotal,
+};
