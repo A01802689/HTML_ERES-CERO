@@ -3,7 +3,7 @@ let graficaDificultad;
 
 //cargar un evento clicl n.addEventListener(¨Keydown, event¨)
 
-window.onload = function () { // caundo la pagina termina de cargar, hace las funciones
+window.onload = function () { 
     const ctx1 = document.getElementById('graficaPuntaje').getContext('2d'); // lo identifca con canvas en HTML
     const ctx2 = document.getElementById('graficaTiempo').getContext('2d');
 
@@ -14,7 +14,7 @@ window.onload = function () { // caundo la pagina termina de cargar, hace las fu
             datasets: [{
                 label: 'Puntaje',
                 data: [],
-                borderColor: '#f43f5e',
+                borderColor: '#933ff4',
                 borderWidth: 2
             }]
         },
@@ -42,7 +42,7 @@ window.onload = function () { // caundo la pagina termina de cargar, hace las fu
             datasets: [{
                 label: 'Partidas',
                 data: [0, 0, 0],
-                backgroundColor: ['#e94560', '#e0324f', '#b00d02']
+                backgroundColor: ['#9c45e9', '#8f32e0', '#5f02b0']
             }]
         },
                options: {
@@ -71,7 +71,7 @@ async function cargarDatos() {
     }
 
     try {
-        const response = await fetch(`https://5fnoeikzkocxvy3zixmnjss3xi0ffnsc.lambda-url.us-east-1.on.aws/busqueda-jugador-correo/${encodeURIComponent(correo)}`);
+        const response = await fetch(`https://ygtfxb3dtnzrhhgw4sixxcynsq0qnzpw.lambda-url.us-east-1.on.aws/busqueda-jugador-correo/${encodeURIComponent(correo)}`);
 
         if (response.ok === false) { //algo em falla en esta seccion
             console.log("No se encontró el alumno");
@@ -86,19 +86,19 @@ async function cargarDatos() {
 
     } catch (error) {
         console.error(error);
-        alert("Error al obtener datos");
+        alert("Error al intener leer los datos");
     }
 }
 
 function actualizarGraficas(data) {
 
-    if (!data.partidas || data.partidas.length === 0) {
+    if (data.partidas.length === 0) {
         graficaPuntaje.data.labels = [];
         graficaPuntaje.data.datasets[0].data = [];
         graficaPuntaje.update();
 
         graficaDificultad.data.datasets[0].data = [0, 0, 0];
-        graficaDificultad.update();
+        graficaDificultad.update(); // basicmanete aciliza los datos, o mas bien no conserva los datos del correo anterior 
 
         return;
     }
@@ -107,6 +107,7 @@ function actualizarGraficas(data) {
     const puntajes = [];
 
     for (let i = 0; i < data.partidas.length; i++) {
+                     //new Date taransofrma fehcaHora a una fecha hr
         fechas.push(new Date(data.partidas[i].fechaHora).toLocaleDateString()); //toLocalDataString es un metodo que cmmbia la hr a una nomral
         puntajes.push(data.partidas[i].puntaje);
     }
@@ -143,7 +144,7 @@ function actualizarTablaLogros(logros) {
     const tbody = document.querySelector("#tablaLogros tbody");
     tbody.innerHTML = "";
 
-    if (!logros || logros.length === 0) {
+    if (logros.length === 0) {
         tbody.innerHTML = "<tr><td colspan='4'>Sin logros</td></tr>";
         return;
     }
