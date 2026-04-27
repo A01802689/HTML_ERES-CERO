@@ -223,7 +223,7 @@ async function subirPartida(conexion, body) {
 
 async function asignarLogro(conexion, body) {
     const sqlInsert =
-        "INSERT IGNORE INTO JUGADOR_LOGRO(idJugador, idLogro, desbloqueado, fechaDesbloqueo) VALUES (?,?,1,?);";
+        "INSERT IGNORE INTO JUGADOR_LOGRO(idJugador, idLogro, fechaDesbloqueo) VALUES (?,?,?);";
 
     // const [resultado] = await conexion.execute(sqlInsert, [
     //     body.idJugador,
