@@ -125,7 +125,8 @@ async function obtenerDesempenoIndividual(conexion, correo) {
 
     let resultado = {};
     if (row1) {
-        resultado[row1.idJugador] = {
+        resultado = {
+            idJugador: row1.idJugador,
             alias: row1.alias,
             correo: row1.correo,
             nivelActual: row1.nivelAlcanzado,
@@ -149,7 +150,7 @@ async function obtenerDesempenoIndividual(conexion, correo) {
         const [rows3] = await conexion.query(sqlSelect3, [row1.idJugador]);
 
         for (let row of rows2) {
-            resultado[row1.idJugador].partidas.push({
+            resultado.partidas.push({
                 fechaHora: row.fechaHora,
                 puntaje: row.puntaje,
                 tiempo: row.tiempo,
@@ -157,7 +158,7 @@ async function obtenerDesempenoIndividual(conexion, correo) {
             });
         }
         for (let row of rows3) {
-            resultado[row1.idJugador].logros.push({
+            resultado.logros.push({
                 fechaDesbloqueo: row.fechaDesbloqueo,
                 idLogro: row.idLogro,
                 nombre: row.nombre,
