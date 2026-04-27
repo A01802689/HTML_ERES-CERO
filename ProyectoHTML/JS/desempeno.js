@@ -76,7 +76,7 @@ async function cargarDatos() {
             }`,
         );
 
-        if (response.ok === false) { //algo em falla en esta seccion
+        if (!response.ok) { //algo em falla en esta seccion
             console.log("No se encontró el alumno");
             return;
         }
