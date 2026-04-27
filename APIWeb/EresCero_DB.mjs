@@ -134,7 +134,8 @@ async function obtenerDesempenoIndividual(conexion, correo) {
             partidas: [],
             logros: [],
         };
-        const sqlSelect2 = "SELECT p.fechaHora as fechaHora, " +
+        const sqlSelect2 =
+            "SELECT p.fechaHora as fechaHora, p.dificultad as dificultad, " +
             "p.puntaje as puntaje, p.tiempo as tiempo " +
             "FROM PARTIDA p " +
             "JOIN JUGADOR j ON p.idJugador = j.idJugador " +
