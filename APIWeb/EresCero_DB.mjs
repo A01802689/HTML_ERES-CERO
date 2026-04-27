@@ -223,7 +223,7 @@ async function subirPartida(conexion, body) {
 
 async function asignarLogro(conexion, body) {
     const sqlInsert =
-        "INSERT INTO JUGADOR_LOGRO(idJugador, idLogro, fechaDesbloqueo) VALUES (?,?,?);";
+        "INSERT IGNORE INTO JUGADOR_LOGRO(idJugador, idLogro, desbloqueado, fechaDesbloqueo) VALUES (?,?,1,?);";
 
     // const [resultado] = await conexion.execute(sqlInsert, [
     //     body.idJugador,
@@ -244,7 +244,7 @@ async function asignarLogro(conexion, body) {
 
 async function asignarAspecto(conexion, body) {
     const sqlInsert =
-        "INSERT INTO JUGADOR_ASPECTO(idJugador, idAspecto, fechaDesbloqueo) VALUES (?,?,?);";
+        "INSERT IGNORE INTO JUGADOR_ASPECTO(idJugador, idAspecto, desbloqueado, fechaDesbloqueo) VALUES (?,?,1,?);";
 
     // const [resultado] = await conexion.execute(sqlInsert, [
     //     body.idJugador,
@@ -263,6 +263,30 @@ async function asignarAspecto(conexion, body) {
     return { message: "Aspecto desbloqueado." };
 }
 
+async function obtenerLogrosJugador(conexion, idJugador) {
+    const [rows] = await conexion.query(
+        "SELECT idLogro FROM JUGADOR_LOGRO WHERE idJugador = ?",
+        [idJugador],
+    );
+    return rows;
+}
+
+async function obtenerAspectosJugador(conexion, idJugador) {
+    const [rows] = await conexion.query(
+        "SELECT idAspecto FROM JUGADOR_ASPECTO WHERE idJugador = ? AND desbloqueado = 1",
+        [idJugador],
+    );
+    return rows;
+}
+
+async function obtenerPuntajeTotal(conexion, idJugador) {
+    const [rows] = await conexion.query(
+        "SELECT COALESCE(SUM(puntaje), 0) as puntajeTotal FROM PARTIDA WHERE idJugador = ?",
+        [idJugador],
+    );
+    return { puntajeTotal: rows[0].puntajeTotal };
+}
+
 export default {
     crearConexion,
     obtenerDatosJugador,
@@ -275,4 +299,7 @@ export default {
     subirPartida,
     asignarLogro,
     asignarAspecto,
+    obtenerLogrosJugador,
+    obtenerAspectosJugador,
+    obtenerPuntajeTotal,
 };

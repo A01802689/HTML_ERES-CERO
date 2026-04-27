@@ -206,6 +206,54 @@ app.post("/aspecto", async (req, res) => {
     }
 });
 
+app.get("/logros-jugador/:idJugador", async (req, res) => {
+    let conexion;
+    try {
+        conexion = await db.crearConexion();
+        const resultado = await db.obtenerLogrosJugador(
+            conexion,
+            req.params.idJugador,
+        );
+        res.json(resultado);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    } finally {
+        if (conexion) await conexion.end();
+    }
+});
+
+app.get("/aspectos-jugador/:idJugador", async (req, res) => {
+    let conexion;
+    try {
+        conexion = await db.crearConexion();
+        const resultado = await db.obtenerAspectosJugador(
+            conexion,
+            req.params.idJugador,
+        );
+        res.json(resultado);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    } finally {
+        if (conexion) await conexion.end();
+    }
+});
+
+app.get("/puntaje-total/:idJugador", async (req, res) => {
+    let conexion;
+    try {
+        conexion = await db.crearConexion();
+        const resultado = await db.obtenerPuntajeTotal(
+            conexion,
+            req.params.idJugador,
+        );
+        res.json(resultado);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    } finally {
+        if (conexion) await conexion.end();
+    }
+});
+
 app.listen(port, () => {
     if (process.env.AWS_LAMBDA_FUNCTION_NAME === undefined) {
         app.listen(port, () => {
