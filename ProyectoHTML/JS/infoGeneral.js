@@ -9,7 +9,8 @@
 
                 let partidasHTML = '';
                 for (let p of jugador.partidas) {
-                    partidasHTML += `<li>Fecha: ${p.fechaHora} | Puntaje: ${p.puntaje} | Tiempo: ${p.tiempo}</li>`;
+                   const fecha = new Date(p.fechaHora).toLocaleDateString('es-MX');
+                    partidasHTML += `<li>Fecha: ${fecha} | Puntaje: ${p.puntaje} | Tiempo: ${p.tiempo}</li>`;
                 }
 
                 let logrosHTML = '';
