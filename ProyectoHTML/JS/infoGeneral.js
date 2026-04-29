@@ -15,7 +15,8 @@
 
                 let logrosHTML = '';
                 for (let l of jugador.logros) {
-                    logrosHTML += `<li><b>${l.nombre}</b>: ${l.descripcion} (${l.fechaDesbloqueo})</li>`;
+                    const fechaLogro = new Date(l.fechaDesbloqueo).toLocaleDateString('es-MX');
+                    logrosHTML += `<li><b>${l.nombre}</b>: ${l.descripcion} (${fechaLogro})</li>`;
                 }
                                            // el contenedor.innerHTMl me aydua a eviatr que se dupliquen datos, al borrar lo anterio y volver a subir la tabla
                 contenedor.innerHTML += `  
